@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel File Operations</title>
+    <style>
+       /* Base Colors */
+:root {
+    --primary: rgb(139, 92, 246);
+    --white: rgb(255, 255, 255);
+    --light-gray: rgb(249, 250, 251);
+    --gray: rgb(243, 244, 246);
+    --dark-gray: rgb(107, 114, 128);
+    --darker-gray: rgb(75, 85, 99);
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--light-gray);
+    color: var(--darker-gray);
+    line-height: 1.6;
+}
+
+/* Container */
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    color: var(--primary);
+}
+
+/* Sections */
+section {
+    margin-bottom: 30px;
+}
+
+h2 {
+    color: var(--dark-gray);
+    margin-bottom: 15px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Form Inputs */
+input[type="file"],
+input[type="text"] {
+    padding: 10px;
+    border: 1px solid var(--gray);
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: rgb(104, 68, 218);
+}
+
+/* Download Button */
+.download-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--dark-gray);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.download-btn:hover {
+    background-color: var(--darker-gray);
+}
+
+
+/* General Section Styling */
+.operation-section {
+    margin: 2rem auto;
+    padding: 1.5rem;
+    width: 80%;
+    max-width: 600px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Section Title */
+.operation-section h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+/* Form Element Styling */
+.operation-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Labels */
+.operation-section label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #555;
+}
+
+/* Inputs and Select Dropdown */
+.operation-section input,
+.operation-section select {
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+    width: 100%;
+}
+
+/* Input Focus Effect */
+.operation-section input:focus,
+.operation-section select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Submit Button */
+.operation-section button {
+    padding: 0.8rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Submit Button Hover */
+.operation-section button:hover {
+    background-color: #0056b3;
+}
+
+/* Status Display Styling */
+#operationStatus {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    color: #333;
+    text-align: center;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Basic Chat-Driven Excel File Manipulation System</h1>
+        </header>
+
+        <section class="upload-section">
+            <h2>Upload Your File</h2>
+            <form id="uploadForm" method="POST" action="/api/upload" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="file" id="fileInput" required>
+                <button type="submit">Upload</button>
+            </form>
+                <div id="uploadStatus"></div>
+</section>
+
+<section class="operation-section">
+    <h2>Perform Operations</h2>
+    <form id="operationForm" method="POST" action="/api/operation">
+        {% csrf_token %}
+
+        <!-- Dropdown to select the operation -->
+        <label type="text" for="operation">Select Operation:</label>
+        <select name="operation" id="operation" class="operation-section" required>
+            <option value="" disabled selected>Select an operation</option>
+            <option value="add_column">Add Column</option>
+            <option value="combine_columns">Combine Columns</option>
+        </select>
+
+        <!-- Input for new column name -->
+        <label for="newColumnName">New Column Name:</label>
+        <input type="text" name="newColumnName" id="newColumnName" placeholder="Enter new column name" required>
+
+        <!-- Input for columns to combine -->
+        <label for="columnsToSum">Columns to Combine (comma-separated):</label>
+        <input type="text" name="columnsToSum" id="columnsToSum" placeholder="e.g., Price,Tax" required>
+
+        <button type="submit">Perform Operation</button>
+    </form>
+
+    <!-- Display operation status -->
+    <div id="operationStatus"></div>
+</section>
+
+
+        <section class="download-section">
+            <h2>Download Updated File</h2>
+            <a href="/api/download" id="downloadLink" class="download-btn">Download Updated File</a>
+        </section>
+    </div>
+    <script>
+        // Handle file upload
+        document.getElementById('uploadForm').onsubmit = async (event) => {
+            event.preventDefault();
+            const formData = new FormData();
+            const fileInput = document.getElementById('fileInput');
+            formData.append('file', fileInput.files[0]);
+
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            const status = document.getElementById('uploadStatus');
+            if (response.ok) {
+                status.textContent = 'File uploaded successfully. Columns: ' + result.columns.join(', ');
+            } else {
+                status.textContent = 'Error: ' + result.error;
+            }
+        };
+
+        document.getElementById('operationForm').onsubmit = async (event) => {
+    event.preventDefault();
+
+    const operation = document.getElementById('operation').value; // Get selected operation
+    const newColumnName = document.getElementById('newColumnName').value;
+    const columnsToSum = document.getElementById('columnsToSum').value.split(',').map(col => col.trim());
+
+    // Ensure the operation field is not empty
+    if (!operation) {
+        document.getElementById('operationStatus').textContent = "Please select a valid operation.";
+        return;
+    }
+
+    // Construct the payload
+    const payload = {
+        operation: operation,
+        params: {
+            new_column_name: newColumnName,
+            columns_to_sum: columnsToSum
+        }
+    };
+
+    try {
+        const response = await fetch('/api/operation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+        const status = document.getElementById('operationStatus');
+
+        if (response.ok) {
+            status.innerHTML = `
+                <p>Operation successful. Updated Columns: ${result.columns.join(', ')}</p>
+                <p>Preview:</p>
+                <table>
+                    <thead>
+                        <tr>${result.columns.map(col => `<th>${col}</th>`).join('')}</tr>
+                    </thead>
+                    <tbody>
+                        ${result.preview.map(row => `
+                            <tr>${result.columns.map(col => `<td>${row[col] || ''}</td>`).join('')}</tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } else {
+            status.textContent = `Error: ${result.error}`;
+        }
+    } catch (error) {
+        document.getElementById('operationStatus').textContent = 'Error connecting to the server.';
+    }
+};
+
+    </script>
+</body>
+</html>

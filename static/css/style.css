@@ -1,0 +1,97 @@
+/* Base Colors */
+:root {
+    --primary: rgb(139, 92, 246);
+    --white: rgb(255, 255, 255);
+    --light-gray: rgb(249, 250, 251);
+    --gray: rgb(243, 244, 246);
+    --dark-gray: rgb(107, 114, 128);
+    --darker-gray: rgb(75, 85, 99);
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--light-gray);
+    color: var(--darker-gray);
+    line-height: 1.6;
+}
+
+/* Container */
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    color: var(--primary);
+}
+
+/* Sections */
+section {
+    margin-bottom: 30px;
+}
+
+h2 {
+    color: var(--dark-gray);
+    margin-bottom: 15px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Form Inputs */
+input[type="file"],
+input[type="text"] {
+    padding: 10px;
+    border: 1px solid var(--gray);
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: rgb(104, 68, 218);
+}
+
+/* Download Button */
+.download-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--dark-gray);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.download-btn:hover {
+    background-color: var(--darker-gray);
+}
